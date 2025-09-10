@@ -35,7 +35,7 @@ const ModelCard = React.memo<TModelCardProps>(({
     return "cost" in model && 
            model.cost && 
            (Number(model.cost.input) > 0 || Number(model.cost.output) > 0);
-  }, [model.cost]);
+  }, [model]);
 
   // Memoize the capability click handler to prevent unnecessary re-renders
   const handleCapabilityClick = useCallback((capability: Capability) => {
@@ -79,7 +79,7 @@ const ModelCard = React.memo<TModelCardProps>(({
               </Tooltip>
             )}
 
-            {hasCost && (
+            {hasCost && "cost" in model && model.cost && (
               <PricingBadge
                 input={model.cost.input}
                 output={model.cost.output}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useMemo, startTransition } from "react";
+import React, { useRef, useMemo } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { ModelCard } from "./model-card";
 import type { ModelEntry, Capability } from "@/hooks/use-models-search";
@@ -22,7 +22,7 @@ const COLUMNS = {
 const CARD_HEIGHT = 240; // Fixed card height
 const GAP = 16; // Grid gap
 
-export const VirtualizedModelGrid = React.memo<VirtualizedModelGridProps>(({ 
+const VirtualizedModelGrid = React.memo<VirtualizedModelGridProps>(({ 
   models, 
   searchTerm, 
   selectedCapabilities, 
@@ -121,3 +121,7 @@ export const VirtualizedModelGrid = React.memo<VirtualizedModelGridProps>(({
     </div>
   );
 });
+
+VirtualizedModelGrid.displayName = "VirtualizedModelGrid";
+
+export { VirtualizedModelGrid };

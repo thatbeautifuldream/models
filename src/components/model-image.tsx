@@ -1,5 +1,8 @@
 "use client";
 
+import Image from "next/image";
+import { useState } from "react";
+
 type TModelImageProps = {
   providerKey: string;
   providerName: string;
@@ -11,14 +14,16 @@ export function ModelImage({
   providerName,
   className = "w-8 h-8 rounded bg-muted p-1",
 }: TModelImageProps) {
+  const [hasError, setHasError] = useState(false);
+
   return (
-    <img
-      src={`https://models.dev/logos/${providerKey}.svg`}
+    <Image
+      src={hasError ? "https://models.dev/logos/default.svg" : `https://models.dev/logos/${providerKey}.svg`}
       alt={`${providerName} logo`}
+      width={32}
+      height={32}
       className={className}
-      onError={(e) => {
-        e.currentTarget.src = "https://models.dev/logos/default.svg";
-      }}
+      onError={() => setHasError(true)}
     />
   );
 }

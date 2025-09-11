@@ -27,7 +27,9 @@ const ModelCardContext = createContext<ModelCardContextType | null>(null);
 const useModelCard = () => {
   const context = useContext(ModelCardContext);
   if (!context) {
-    throw new Error("ModelCard compound components must be used within ModelCard");
+    throw new Error(
+      "ModelCard compound components must be used within ModelCard"
+    );
   }
   return context;
 };
@@ -41,39 +43,46 @@ type TModelCardProps = ModelEntry & {
 
 function ModelCardHeader({ className, ...props }: React.ComponentProps<"div">) {
   const { model, provider, providerKey } = useModelCard();
-  
+
   return (
-    <div 
-      className={cn("flex items-start gap-3 mb-3 h-12", className)} 
+    <div
+      className={cn("flex items-start gap-3 mb-3 h-12", className)}
       {...props}
     >
       <ModelImage
         providerKey={providerKey}
         providerName={provider.name}
-        className="w-9 h-9 rounded bg-muted p-1 flex-shrink-0"
+        className="size-12 p-1 flex-shrink-0 dark:invert"
       />
       <div className="flex-1 min-w-0 h-full flex flex-col justify-center">
         <CardTitle className="text-base font-semibold truncate leading-tight mb-0.5">
           {model.name}
         </CardTitle>
-        <p className="text-xs text-muted-foreground truncate">{provider.name}</p>
+        <p className="text-xs text-muted-foreground truncate">
+          {provider.name}
+        </p>
       </div>
     </div>
   );
 }
 
-function ModelCardMetadata({ className, ...props }: React.ComponentProps<"div">) {
+function ModelCardMetadata({
+  className,
+  ...props
+}: React.ComponentProps<"div">) {
   const { model } = useModelCard();
-  
+
   const contextLimit = useMemo(() => {
     if (!model.limit?.context || Number(model.limit.context) <= 0) return null;
     return model.limit.context.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   }, [model.limit?.context]);
 
   const hasCost = useMemo(() => {
-    return "cost" in model && 
-           model.cost && 
-           (Number(model.cost.input) > 0 || Number(model.cost.output) > 0);
+    return (
+      "cost" in model &&
+      model.cost &&
+      (Number(model.cost.input) > 0 || Number(model.cost.output) > 0)
+    );
   }, [model]);
 
   return (
@@ -105,12 +114,18 @@ function ModelCardMetadata({ className, ...props }: React.ComponentProps<"div">)
   );
 }
 
-function ModelCardCapabilities({ className, ...props }: React.ComponentProps<"div">) {
+function ModelCardCapabilities({
+  className,
+  ...props
+}: React.ComponentProps<"div">) {
   const { model, selectedCapabilities, onCapabilityClick } = useModelCard();
-  
-  const handleCapabilityClick = useCallback((capability: Capability) => {
-    onCapabilityClick?.(capability);
-  }, [onCapabilityClick]);
+
+  const handleCapabilityClick = useCallback(
+    (capability: Capability) => {
+      onCapabilityClick?.(capability);
+    },
+    [onCapabilityClick]
+  );
 
   return (
     <div className={cn("mt-auto flex-1", className)} {...props}>
@@ -136,25 +151,35 @@ type ModelCardComponent = {
   Capabilities: typeof ModelCardCapabilities;
 };
 
-const ModelCardRoot = ({ 
+const ModelCardRoot = ({
   model,
-  provider, 
+  provider,
   providerKey,
   uniqueKey,
   selectedCapabilities,
   onCapabilityClick,
   className,
   children,
-  ...props 
+  ...props
 }: TModelCardProps) => {
-  const contextValue = useMemo(() => ({
-    model,
-    provider,
-    providerKey,
-    uniqueKey,
-    selectedCapabilities,
-    onCapabilityClick,
-  }), [model, provider, providerKey, uniqueKey, selectedCapabilities, onCapabilityClick]);
+  const contextValue = useMemo(
+    () => ({
+      model,
+      provider,
+      providerKey,
+      uniqueKey,
+      selectedCapabilities,
+      onCapabilityClick,
+    }),
+    [
+      model,
+      provider,
+      providerKey,
+      uniqueKey,
+      selectedCapabilities,
+      onCapabilityClick,
+    ]
+  );
 
   return (
     <ModelCardContext.Provider value={contextValue}>

@@ -64,6 +64,9 @@ function CapabilityFilterTrigger({
   return (
     <DropdownMenuTrigger asChild>
       <Button
+        type="button"
+        aria-pressed={hasFilters}
+        aria-label={hasFilters ? `Filters (${selectedCapabilities.size})` : "Filter"}
         variant={hasFilters ? "default" : "outline"}
         size="sm"
         className={cn(
@@ -96,14 +99,14 @@ function CapabilityFilterContent({
   const { selectedCapabilities, onToggleCapability, onClearCapabilities } =
     useCapabilityFilter();
 
-  const handleCheckedChange = (capability: Capability) => () => {
-    // Prevent the dropdown from closing by stopping event propagation
+  const handleCheckedChange = (capability: Capability) => (_checked: boolean) => {
+    // Toggle without closing; closing is prevented via onSelect(e.preventDefault()) below
     onToggleCapability(capability);
   };
 
   return (
     <DropdownMenuContent
-      align="start"
+      align="end"
       className={cn("w-56", className)}
       onCloseAutoFocus={(e) => e.preventDefault()}
       {...props}
@@ -190,7 +193,7 @@ const CapabilityFilterRoot = ({
   return (
     <CapabilityFilterContext.Provider value={contextValue}>
       <DropdownMenu>
-        <div className={cn("", className)} {...props}>
+        <div className={cn(className)} {...props}>
           {children}
         </div>
       </DropdownMenu>

@@ -22,7 +22,14 @@ export function SearchInput({
         type="text"
         placeholder={placeholder}
         value={value}
+        aria-label={placeholder}
+        autoComplete="off"
+        autoCorrect="off"
+        spellCheck={false}
         onChange={(e) => onChange(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") onChange("");
+        }}
         className="pl-10 pr-10"
       />
       {value && (

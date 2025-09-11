@@ -21,9 +21,14 @@ const COLUMNS = {
 
 const CARD_HEIGHT = 240; // Fixed card height
 const CARD_HEIGHT_MOBILE = 200; // Smaller height for mobile
-const GAP = 16; // Grid gap
+const GAPS = {
+  mobile: 12,
+  tablet: 16, 
+  desktop: 20,
+  wide: 24,
+} as const;
 
-// Hook to get current screen size and update on resize
+// Debounced hook to get current screen size and update on resize
 const useScreenSize = (): keyof typeof COLUMNS => {
   const [screenSize, setScreenSize] = useState<keyof typeof COLUMNS>(() => {
     if (typeof window === 'undefined') return 'desktop';
@@ -36,20 +41,28 @@ const useScreenSize = (): keyof typeof COLUMNS => {
   });
 
   useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    
     const handleResize = () => {
-      const width = window.innerWidth;
-      let newSize: keyof typeof COLUMNS;
-      
-      if (width >= 1280) newSize = 'wide';
-      else if (width >= 1024) newSize = 'desktop';
-      else if (width >= 768) newSize = 'tablet';
-      else newSize = 'mobile';
-      
-      setScreenSize(newSize);
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        const width = window.innerWidth;
+        let newSize: keyof typeof COLUMNS;
+        
+        if (width >= 1280) newSize = 'wide';
+        else if (width >= 1024) newSize = 'desktop';
+        else if (width >= 768) newSize = 'tablet';
+        else newSize = 'mobile';
+        
+        setScreenSize((prev) => (prev === newSize ? prev : newSize));
+      }, 100); // Debounce resize events
     };
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener('resize', handleResize, { passive: true });
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      clearTimeout(timeoutId);
+    };
   }, []);
 
   return screenSize;
@@ -78,8 +91,8 @@ const VirtualizedModelGrid = React.memo<VirtualizedModelGridProps>(({
   const virtualizer = useVirtualizer({
     count: rows.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => cardHeight + GAP,
-    overscan: 3, // Render 3 extra items above and below viewport
+    estimateSize: () => cardHeight + GAPS[screenSize],
+    overscan: 2, // Reduced overscan for better performance
     getItemKey: (index) => `row-${index}`,
   });
 
@@ -98,10 +111,11 @@ const VirtualizedModelGrid = React.memo<VirtualizedModelGridProps>(({
     <div className="w-full h-full container mx-auto">
       <div
         ref={parentRef}
-        className="h-full overflow-y-auto scrollbar-hide px-2 sm:px-4 py-2"
+        className="h-full overflow-y-auto scrollbar-hide"
         style={{
           scrollbarWidth: 'none',
           msOverflowStyle: 'none',
+          padding: `${GAPS[screenSize]}px`,
         }}
       >
         <div
@@ -125,7 +139,10 @@ const VirtualizedModelGrid = React.memo<VirtualizedModelGridProps>(({
                 }}
               >
                 <div 
-                  className={`grid gap-2 sm:gap-4 ${getGridClasses()}`}
+                  className={`grid ${getGridClasses()}`}
+                  style={{
+                    gap: `${GAPS[screenSize]}px`,
+                  }}
                 >
                   {row.map((entry, colIndex) => (
                     <div
@@ -140,7 +157,7 @@ const VirtualizedModelGrid = React.memo<VirtualizedModelGridProps>(({
                         {...entry} 
                         selectedCapabilities={selectedCapabilities}
                         onCapabilityClick={onCapabilityClick}
-                        className={`${screenSize === 'mobile' ? 'h-[200px]' : 'h-[240px]'}`}
+                        className={screenSize === 'mobile' ? 'h-[200px]' : 'h-[240px]'}
                       >
                         <ModelCard.Header />
                         <ModelCard.Metadata />

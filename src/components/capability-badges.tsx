@@ -56,6 +56,16 @@ function CapabilityBadge({ capability, className, ...props }: CapabilityBadgePro
   return (
     <Badge
       variant={isSelected ? "default" : "outline"}
+      role={onCapabilityClick ? "button" : undefined}
+      aria-pressed={onCapabilityClick ? !!isSelected : undefined}
+      tabIndex={onCapabilityClick ? 0 : -1}
+      onKeyDown={(e) => {
+        if (!onCapabilityClick) return
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault()
+          onCapabilityClick(capability)
+        }
+      }}
       className={cn(
         "text-xs uppercase font-medium tracking-wide transition-colors px-2 py-0.5 select-none",
         onCapabilityClick 
@@ -119,7 +129,7 @@ const CapabilityBadgesRoot = ({
 
   return (
     <CapabilityBadgesContext.Provider value={contextValue}>
-      <div className={cn("flex flex-wrap gap-1.5", className)} {...props}>
+      <div className={cn(className)} {...props}>
         {children}
       </div>
     </CapabilityBadgesContext.Provider>

@@ -11,8 +11,8 @@ type TPricingBadgeProps = {
 };
 
 export function PricingBadge({ input, output }: TPricingBadgeProps) {
-  const hasInput = input !== undefined && Number(input) > 0;
-  const hasOutput = output !== undefined && Number(output) > 0;
+  const hasInput = input !== undefined && input > 0;
+  const hasOutput = output !== undefined && output > 0;
 
   if (!hasInput && !hasOutput) return null;
 

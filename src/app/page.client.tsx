@@ -1,13 +1,15 @@
 "use client";
 
+import { useRef, useEffect } from "react";
 import Link from "next/link";
 import NumberFlow from '@number-flow/react';
 import { useModelsSearch } from "@/hooks/use-models-search";
-import { SearchInput } from "@/components/search-input";
+import { SearchInput, SearchInputRef } from "@/components/search-input";
 import { CapabilityFilter } from "@/components/capability-filter";
 import { VirtualizedModelGrid } from "@/components/virtualized-model-grid";
 
 export function ModelsClient() {
+  const searchInputRef = useRef<SearchInputRef>(null);
   const {
     searchTerm,
     setSearchTerm,
@@ -17,14 +19,26 @@ export function ModelsClient() {
     filteredModels,
   } = useModelsSearch();
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   return (
     <div className="h-screen flex flex-col">
       <div className="flex-none container mx-auto px-4 py-2">
         <div className="space-y-3">
           <SearchInput
+            ref={searchInputRef}
             value={searchTerm}
             onChange={setSearchTerm}
-            placeholder="Search models by name or provider..."
           />
           
           <div className="flex items-center justify-between">

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import NumberFlow from '@number-flow/react';
 import { useModelsSearch } from "@/hooks/use-models-search";
 import { SearchInput } from "@/components/search-input";
 import { CapabilityFilter } from "@/components/capability-filter";
@@ -17,44 +18,45 @@ export function ModelsClient() {
   } = useModelsSearch();
 
   return (
-    <div className="container mx-auto px-4 py-2">
-      <div className="mb-2">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-2">
-          <div className="flex-1">
-            <SearchInput
-              value={searchTerm}
-              onChange={setSearchTerm}
-              placeholder="Search models by name or provider..."
-            />
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground whitespace-nowrap">
-              {filteredModels.length} models
-            </span>
+    <div className="h-screen flex flex-col">
+      <div className="flex-none container mx-auto px-4 py-2">
+        <div className="space-y-3">
+          <SearchInput
+            value={searchTerm}
+            onChange={setSearchTerm}
+            placeholder="Search models by name or provider..."
+          />
+          
+          <div className="flex items-center justify-between">
             <Link
               href="https://models.dev/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs text-primary underline hover:no-underline whitespace-nowrap"
+              className="text-sm text-muted-foreground hover:text-primary transition-colors whitespace-nowrap"
             >
-              Data from models.dev
+              <NumberFlow value={filteredModels.length} /> models
             </Link>
+            
+            <CapabilityFilter
+              selectedCapabilities={selectedCapabilities}
+              onToggleCapability={toggleCapability}
+              onClearCapabilities={clearCapabilities}
+            >
+              <CapabilityFilter.Trigger />
+              <CapabilityFilter.Content />
+            </CapabilityFilter>
           </div>
         </div>
-        
-        <CapabilityFilter
-          selectedCapabilities={selectedCapabilities}
-          onToggleCapability={toggleCapability}
-          onClearCapabilities={clearCapabilities}
-        />
       </div>
 
-      <VirtualizedModelGrid 
-        models={filteredModels} 
-        searchTerm={searchTerm}
-        selectedCapabilities={selectedCapabilities}
-        onCapabilityClick={toggleCapability}
-      />
+      <div className="flex-1 min-h-0">
+        <VirtualizedModelGrid
+          models={filteredModels}
+          searchTerm={searchTerm}
+          selectedCapabilities={selectedCapabilities}
+          onCapabilityClick={toggleCapability}
+        />
+      </div>
     </div>
   );
 }

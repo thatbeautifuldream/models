@@ -11,9 +11,12 @@ type TPricingBadgeProps = {
 };
 
 export function PricingBadge({ input, output }: TPricingBadgeProps) {
-  if (!input && !output) return null;
+  const hasInput = input !== undefined && input > 0;
+  const hasOutput = output !== undefined && output > 0;
 
-  if (input && output) {
+  if (!hasInput && !hasOutput) return null;
+
+  if (hasInput && hasOutput) {
     return (
       <TooltipProvider>
         <div className="inline-flex rounded-lg overflow-hidden text-xs font-medium border">
@@ -42,7 +45,7 @@ export function PricingBadge({ input, output }: TPricingBadgeProps) {
     );
   }
 
-  if (input) {
+  if (hasInput) {
     return (
       <TooltipProvider>
         <Tooltip>

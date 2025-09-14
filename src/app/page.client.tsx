@@ -1,12 +1,11 @@
 "use client";
 
-import { useRef, useEffect } from "react";
-import Link from "next/link";
-import NumberFlow from '@number-flow/react';
-import { useModelsSearch } from "@/hooks/use-models-search";
-import { SearchInput, SearchInputRef } from "@/components/search-input";
 import { CapabilityFilter } from "@/components/capability-filter";
+import { SearchInput, SearchInputRef } from "@/components/search-input";
 import { VirtualizedModelGrid } from "@/components/virtualized-model-grid";
+import { useModelsSearch } from "@/hooks/use-models-search";
+import NumberFlow from "@number-flow/react";
+import { useEffect, useRef } from "react";
 
 export function ModelsClient() {
   const searchInputRef = useRef<SearchInputRef>(null);
@@ -21,14 +20,14 @@ export function ModelsClient() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault();
         searchInputRef.current?.focus();
       }
     };
 
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
 
   return (
@@ -40,17 +39,12 @@ export function ModelsClient() {
             value={searchTerm}
             onChange={setSearchTerm}
           />
-          
+
           <div className="flex items-center justify-between">
-            <Link
-              href="https://models.dev/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-muted-foreground hover:text-primary transition-colors whitespace-nowrap"
-            >
+            <span className="text-sm text-muted-foreground hover:text-primary transition-colors whitespace-nowrap">
               <NumberFlow value={filteredModels.length} /> models
-            </Link>
-            
+            </span>
+
             <CapabilityFilter
               selectedCapabilities={selectedCapabilities}
               onToggleCapability={toggleCapability}

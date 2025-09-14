@@ -31,7 +31,7 @@ export function ModelsClient() {
   }, []);
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-screen flex flex-col select-none">
       <div className="flex-none container mx-auto px-4 py-3">
         <div className="space-y-3">
           <SearchInput

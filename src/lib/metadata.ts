@@ -6,7 +6,7 @@ type MetadataGenerator = Omit<Metadata, "description" | "title"> & {
   description: string;
 };
 
-const applicationName = `Resume ${new Date().getFullYear()}`;
+const applicationName = `Surf ${new Date().getFullYear()} AI Models`;
 const author: Metadata["authors"] = {
   name: "Milind Mishra",
   url: "https://milindmishra.com",
@@ -19,7 +19,7 @@ export const createMetadata = ({
   description,
   ...properties
 }: MetadataGenerator): Metadata => {
-  const parsedTitle = `${title} | ${applicationName}`;
+  const parsedTitle = `${title} - ${applicationName}`;
   const image = "https://models.surf/images/opengraph-image.png";
 
   const defaultMetadata: Metadata = {

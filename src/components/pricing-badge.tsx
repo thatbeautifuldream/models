@@ -19,12 +19,10 @@ export function PricingBadge({ input, output }: TPricingBadgeProps) {
   if (hasInput && hasOutput) {
     return (
       <TooltipProvider>
-        <div className="inline-flex rounded-lg overflow-hidden text-xs font-medium border">
+        <div className="inline-flex overflow-hidden text-xs font-medium border">
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="px-2 py-0.5 border-r cursor-help">
-                ${input}
-              </div>
+              <div className="px-2 py-0.5 border-r cursor-help">${input}</div>
             </TooltipTrigger>
             <TooltipContent>
               <p>Input pricing per token</p>
@@ -32,9 +30,7 @@ export function PricingBadge({ input, output }: TPricingBadgeProps) {
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="px-2 py-0.5 cursor-help">
-                ${output}
-              </div>
+              <div className="px-2 py-0.5 cursor-help">${output}</div>
             </TooltipTrigger>
             <TooltipContent>
               <p>Output pricing per token</p>
@@ -50,7 +46,7 @@ export function PricingBadge({ input, output }: TPricingBadgeProps) {
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <div className="inline-flex rounded-lg px-2 py-0.5 text-xs font-medium border cursor-help">
+            <div className="inline-flex px-2 py-0.5 text-xs font-medium border cursor-help">
               ${input}
             </div>
           </TooltipTrigger>
@@ -66,7 +62,7 @@ export function PricingBadge({ input, output }: TPricingBadgeProps) {
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <div className="inline-flex rounded-lg px-2 py-0.5 text-xs font-medium border cursor-help">
+          <div className="inline-flex px-2 py-0.5 text-xs font-medium border cursor-help">
             ${output}
           </div>
         </TooltipTrigger>

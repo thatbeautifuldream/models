@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/providers/theme-provider";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { env } from "@/env";
 import "./globals.css";
+import { ClarityProvider } from "@/components/providers/clarity-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -47,6 +48,7 @@ export default function RootLayout({
           </ThemeProvider>
         </NuqsAdapter>
         <GoogleAnalytics gaId={env.GA_ID} />
+        <ClarityProvider />
       </body>
     </html>
   );

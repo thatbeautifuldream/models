@@ -22,10 +22,10 @@ const COLUMNS = {
 const CARD_HEIGHT = 240; // Fixed card height
 const CARD_HEIGHT_MOBILE = 200; // Smaller height for mobile
 const GAPS = {
-  mobile: 12,
-  tablet: 16, 
-  desktop: 20,
-  wide: 24,
+  mobile: 8,
+  tablet: 10,
+  desktop: 12,
+  wide: 14,
 } as const;
 
 // Debounced hook to get current screen size and update on resize
@@ -108,14 +108,15 @@ const VirtualizedModelGrid = React.memo<VirtualizedModelGridProps>(({
   };
 
   return (
-    <div className="w-full h-full container mx-auto">
+    <div className="w-full h-full container mx-auto px-4">
       <div
         ref={parentRef}
         className="h-full overflow-y-auto scrollbar-hide"
         style={{
           scrollbarWidth: 'none',
           msOverflowStyle: 'none',
-          padding: `${GAPS[screenSize]}px`,
+          paddingTop: `${GAPS[screenSize]}px`,
+          paddingBottom: `${GAPS[screenSize]}px`,
         }}
       >
         <div

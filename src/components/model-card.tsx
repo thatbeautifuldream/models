@@ -185,7 +185,7 @@ const ModelCardRoot = ({
     <ModelCardContext.Provider value={contextValue}>
       <Card
         className={cn(
-          "hover:shadow-lg transition-shadow duration-200 flex flex-col p-4",
+          "hover:shadow-lg transition-shadow duration-200 flex flex-col p-3",
           className
         )}
         {...props}

@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@microsoft/clarity':
+        specifier: ^1.0.0
+        version: 1.0.0
       '@next/third-parties':
         specifier: ^15.5.3
         version: 15.5.3(next@15.5.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)
@@ -319,6 +322,9 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.30':
     resolution: {integrity: sha512-GQ7Nw5G2lTu/BtHTKfXhKHok2WGetd4XYcVKGx00SjAk8GMwgJM3zr6zORiPGuOE+/vkc90KtTosSSvaCjKb2Q==}
+
+  '@microsoft/clarity@1.0.0':
+    resolution: {integrity: sha512-2QY6SmXnqRj6dWhNY8NYCN3e53j4zCFebH4wGnNhdGV1mqAsQwql2fT0w8TISxCvwwfVp8idsWLIdrRHOms1PQ==}
 
   '@napi-rs/wasm-runtime@0.2.12':
     resolution: {integrity: sha512-ZVWUcfwY4E/yPitQJl481FjFo3K22D6qF0DuFH6Y/nbnE11GY5uguDxZMGXPQ8WQ0128MXQD7TnfHyK4oWoIJQ==}
@@ -2528,6 +2534,8 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
+
+  '@microsoft/clarity@1.0.0': {}
 
   '@napi-rs/wasm-runtime@0.2.12':
     dependencies:

@@ -42,35 +42,20 @@ type TModelCardProps = ModelEntry & {
 } & React.ComponentProps<typeof Card>;
 
 function ModelCardHeader({ className, ...props }: React.ComponentProps<"div">) {
-  const { model, provider, providerKey } = useModelCard();
+  const {
+    model,
+    provider,
+    providerKey,
+    selectedCapabilities,
+    onCapabilityClick,
+  } = useModelCard();
 
-  return (
-    <div
-      className={cn("flex items-start gap-3 mb-3 h-12", className)}
-      {...props}
-    >
-      <ModelImage
-        providerKey={providerKey}
-        providerName={provider.name}
-        className="size-12 p-1 flex-shrink-0 dark:invert"
-      />
-      <div className="flex-1 min-w-0 h-full flex flex-col justify-center">
-        <CardTitle className="text-base font-semibold truncate leading-tight mb-0.5">
-          {model.name}
-        </CardTitle>
-        <p className="text-xs text-muted-foreground truncate">
-          {provider.name}
-        </p>
-      </div>
-    </div>
+  const handleCapabilityClick = useCallback(
+    (capability: Capability) => {
+      onCapabilityClick?.(capability);
+    },
+    [onCapabilityClick]
   );
-}
-
-function ModelCardMetadata({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
-  const { model } = useModelCard();
 
   const contextLimit = useMemo(() => {
     if (!model.limit?.context || Number(model.limit.context) <= 0) return null;
@@ -86,30 +71,70 @@ function ModelCardMetadata({
   }, [model]);
 
   return (
-    <div className={cn("mb-3 min-h-6", className)} {...props}>
-      <div className="flex flex-wrap gap-2 items-center">
-        {contextLimit && (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Badge
-                  variant="outline"
-                  className="font-mono text-xs px-2 py-0.5 cursor-help h-5"
-                >
-                  {contextLimit}
-                </Badge>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Context length</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        )}
+    <div className={cn("mb-3", className)} {...props}>
+      {/* Top section: Image on left, metadata on right */}
+      <div className="flex items-start justify-between mb-3">
+        <ModelImage
+          providerKey={providerKey}
+          providerName={provider.name}
+          className="size-14 p-1 flex-shrink-0 dark:invert"
+        />
 
-        {hasCost && "cost" in model && model.cost && (
-          <PricingBadge input={model.cost.input} output={model.cost.output} />
-        )}
+        <div className="flex flex-col gap-2 items-end">
+          {contextLimit && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="inline-flex px-2 py-0.5 text-xs font-medium font-mono border cursor-help">
+                    {contextLimit}
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Context length</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+
+          {hasCost && "cost" in model && model.cost && (
+            <PricingBadge input={model.cost.input} output={model.cost.output} />
+          )}
+        </div>
       </div>
+
+      {/* Model name and provider */}
+      <div className="mb-3">
+        <CardTitle className="text-base font-semibold truncate leading-tight mb-0.5">
+          {model.name}
+        </CardTitle>
+        <p className="text-xs text-muted-foreground truncate mb-2">
+          {provider.name}
+        </p>
+
+        {/* Capabilities right after model info */}
+        <CapabilityBadges
+          modalities={model.modalities}
+          attachment={model.attachment}
+          reasoning={model.reasoning}
+          tool_call={model.tool_call}
+          temperature={model.temperature}
+          onCapabilityClick={handleCapabilityClick}
+          selectedCapabilities={selectedCapabilities}
+        >
+          <CapabilityBadges.List />
+        </CapabilityBadges>
+      </div>
+    </div>
+  );
+}
+
+function ModelCardMetadata({
+  className,
+  ...props
+}: React.ComponentProps<"div">) {
+  return (
+    <div className={cn("mb-3", className)} {...props}>
+      {/* Metadata is now handled in the header */}
     </div>
   );
 }
@@ -118,28 +143,9 @@ function ModelCardCapabilities({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const { model, selectedCapabilities, onCapabilityClick } = useModelCard();
-
-  const handleCapabilityClick = useCallback(
-    (capability: Capability) => {
-      onCapabilityClick?.(capability);
-    },
-    [onCapabilityClick]
-  );
-
   return (
-    <div className={cn("mt-auto flex-1", className)} {...props}>
-      <CapabilityBadges
-        modalities={model.modalities}
-        attachment={model.attachment}
-        reasoning={model.reasoning}
-        tool_call={model.tool_call}
-        temperature={model.temperature}
-        onCapabilityClick={handleCapabilityClick}
-        selectedCapabilities={selectedCapabilities}
-      >
-        <CapabilityBadges.List />
-      </CapabilityBadges>
+    <div className={cn("", className)} {...props}>
+      {/* Capabilities are now in the header */}
     </div>
   );
 }
@@ -185,7 +191,7 @@ const ModelCardRoot = ({
     <ModelCardContext.Provider value={contextValue}>
       <Card
         className={cn(
-          "hover:shadow-lg transition-shadow duration-200 flex flex-col p-3",
+          "hover:shadow-lg transition-shadow duration-200 flex flex-col p-4",
           className
         )}
         {...props}

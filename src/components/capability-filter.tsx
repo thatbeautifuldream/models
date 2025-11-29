@@ -1,28 +1,28 @@
 "use client";
 
 import React, { createContext, useContext, useMemo } from "react";
+import { Filter, FilterX } from "lucide-react";
+import type { TCapability } from "@/hooks/use-models-search";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
-  DropdownMenuContent,
   DropdownMenuCheckboxItem,
+  DropdownMenuContent,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Filter, FilterX } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { Capability } from "@/hooks/use-models-search";
 
-type CapabilityFilterContextType = {
-  selectedCapabilities: Set<Capability>;
-  onToggleCapability: (capability: Capability) => void;
+type TCapabilityFilterContextType = {
+  selectedCapabilities: Set<TCapability>;
+  onToggleCapability: (capability: TCapability) => void;
   onClearCapabilities: () => void;
-  availableCapabilities: Capability[];
+  availableCapabilities: TCapability[];
 };
 
 const CapabilityFilterContext =
-  createContext<CapabilityFilterContextType | null>(null);
+  createContext<TCapabilityFilterContextType | null>(null);
 
 const useCapabilityFilter = () => {
   const context = useContext(CapabilityFilterContext);
@@ -34,18 +34,22 @@ const useCapabilityFilter = () => {
   return context;
 };
 
-type CapabilityFilterProps = {
-  selectedCapabilities: Set<Capability>;
-  onToggleCapability: (capability: Capability) => void;
+type TCapabilityFilterProps = {
+  selectedCapabilities: Set<TCapability>;
+  onToggleCapability: (capability: TCapability) => void;
   onClearCapabilities: () => void;
   className?: string;
   children?: React.ReactNode;
 } & React.ComponentProps<"div">;
 
-// Available capabilities grouped by type
 const CAPABILITY_GROUPS = {
-  modalities: ["text", "image", "audio", "video"] as Capability[],
-  features: ["attachment", "reasoning", "tools", "temperature"] as Capability[],
+  modalities: ["text", "image", "audio", "video"] as TCapability[],
+  features: [
+    "attachment",
+    "reasoning",
+    "tools",
+    "temperature",
+  ] as TCapability[],
 };
 
 const ALL_CAPABILITIES = [
@@ -99,8 +103,7 @@ function CapabilityFilterContent({
   const { selectedCapabilities, onToggleCapability, onClearCapabilities } =
     useCapabilityFilter();
 
-  const handleCheckedChange = (capability: Capability) => (_checked: boolean) => {
-    // Toggle without closing; closing is prevented via onSelect(e.preventDefault()) below
+  const handleCheckedChange = (capability: TCapability) => () => {
     onToggleCapability(capability);
   };
 
@@ -166,8 +169,8 @@ function CapabilityFilterContent({
   );
 }
 
-type CapabilityFilterComponent = {
-  (props: CapabilityFilterProps): React.ReactElement;
+type TCapabilityFilterComponent = {
+  (props: TCapabilityFilterProps): React.ReactElement;
   Trigger: typeof CapabilityFilterTrigger;
   Content: typeof CapabilityFilterContent;
 };
@@ -179,7 +182,7 @@ const CapabilityFilterRoot = ({
   className,
   children,
   ...props
-}: CapabilityFilterProps) => {
+}: TCapabilityFilterProps) => {
   const contextValue = useMemo(
     () => ({
       selectedCapabilities,
@@ -201,10 +204,11 @@ const CapabilityFilterRoot = ({
   );
 };
 
-const CapabilityFilter = CapabilityFilterRoot as CapabilityFilterComponent;
+const CapabilityFilter =
+  CapabilityFilterRoot as TCapabilityFilterComponent;
 
 CapabilityFilter.Trigger = CapabilityFilterTrigger;
 CapabilityFilter.Content = CapabilityFilterContent;
 
 export { CapabilityFilter };
-export type { CapabilityFilterContextType, CapabilityFilterProps };
+export type { TCapabilityFilterContextType, TCapabilityFilterProps };

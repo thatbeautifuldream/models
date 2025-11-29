@@ -1,54 +1,67 @@
 import React, { createContext, useContext, useMemo } from "react";
+import type { TCapability, TModel } from "@/hooks/use-models-search";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import type { Model, Capability } from "@/hooks/use-models-search";
 
-type CapabilityBadgesContextType = {
+type TCapabilityBadgesContextType = {
   capabilities: string[];
-  onCapabilityClick?: (capability: Capability) => void;
-  selectedCapabilities?: Set<Capability>;
+  onCapabilityClick?: (capability: TCapability) => void;
+  selectedCapabilities?: Set<TCapability>;
 };
 
-const CapabilityBadgesContext = createContext<CapabilityBadgesContextType | null>(null);
+const CapabilityBadgesContext =
+  createContext<TCapabilityBadgesContextType | null>(null);
 
 const useCapabilityBadges = () => {
   const context = useContext(CapabilityBadgesContext);
   if (!context) {
-    throw new Error("CapabilityBadges compound components must be used within CapabilityBadges");
+    throw new Error(
+      "CapabilityBadges compound components must be used within CapabilityBadges"
+    );
   }
   return context;
 };
 
 type TCapabilityBadgesProps = {
-  modalities?: Model["modalities"];
-  attachment?: Model["attachment"];
-  reasoning?: Model["reasoning"];
-  tool_call?: Model["tool_call"];
-  temperature?: Model["temperature"];
-  onCapabilityClick?: (capability: Capability) => void;
-  selectedCapabilities?: Set<Capability>;
+  modalities?: TModel["modalities"];
+  attachment?: TModel["attachment"];
+  reasoning?: TModel["reasoning"];
+  tool_call?: TModel["tool_call"];
+  temperature?: TModel["temperature"];
+  onCapabilityClick?: (capability: TCapability) => void;
+  selectedCapabilities?: Set<TCapability>;
   className?: string;
   children?: React.ReactNode;
 } & React.ComponentProps<"div">;
 
-function CapabilityBadgesList({ className, ...props }: React.ComponentProps<"div">) {
+function CapabilityBadgesList({
+  className,
+  ...props
+}: React.ComponentProps<"div">) {
   const { capabilities } = useCapabilityBadges();
 
   return (
     <div className={cn("flex flex-wrap gap-1.5", className)} {...props}>
       {capabilities.map((capability) => (
-        <CapabilityBadge key={capability} capability={capability as Capability} />
+        <CapabilityBadge
+          key={capability}
+          capability={capability as TCapability}
+        />
       ))}
     </div>
   );
 }
 
-type CapabilityBadgeProps = {
-  capability: Capability;
+type TCapabilityBadgeProps = {
+  capability: TCapability;
   className?: string;
 } & Omit<React.ComponentProps<typeof Badge>, "onClick" | "variant">;
 
-function CapabilityBadge({ capability, className, ...props }: CapabilityBadgeProps) {
+function CapabilityBadge({
+  capability,
+  className,
+  ...props
+}: TCapabilityBadgeProps) {
   const { onCapabilityClick, selectedCapabilities } = useCapabilityBadges();
   
   const isSelected = selectedCapabilities?.has(capability);
@@ -142,4 +155,4 @@ CapabilityBadges.List = CapabilityBadgesList;
 CapabilityBadges.Badge = CapabilityBadge;
 
 export { CapabilityBadges };
-export type { CapabilityBadgesContextType, TCapabilityBadgesProps };
+export type { TCapabilityBadgesContextType, TCapabilityBadgesProps };

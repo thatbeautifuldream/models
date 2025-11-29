@@ -3,7 +3,10 @@
 import { useDeferredValue, useMemo, useTransition } from "react";
 import { useQueryState } from "nuqs";
 import Fuse from "fuse.js";
-import type { TModel as TApiModel, TProvider as TApiProvider } from "@/types/api";
+import type {
+  TModel as TApiModel,
+  TProvider as TApiProvider,
+} from "@/types/api";
 import { useModels } from "./use-models";
 
 export type TModel = TApiModel;
@@ -27,22 +30,53 @@ export type TCapability =
   | "tools"
   | "temperature";
 
+const KNOWN_CAPABILITIES: readonly TCapability[] = [
+  "text",
+  "image",
+  "audio",
+  "video",
+  "attachment",
+  "reasoning",
+  "tools",
+  "temperature",
+] as const;
+
+const isValidCapability = (value: unknown): value is TCapability => {
+  return (
+    typeof value === "string" &&
+    KNOWN_CAPABILITIES.includes(value as TCapability)
+  );
+};
+
 const getModelCapabilities = (model: TModel): TCapability[] => {
-  const capabilities: TCapability[] = [];
+  const capabilitiesSet = new Set<TCapability>();
 
-  if (model.modalities?.input) {
-    capabilities.push(...(model.modalities.input as TCapability[]));
+  if (model.modalities?.input && Array.isArray(model.modalities.input)) {
+    for (const modality of model.modalities.input) {
+      if (isValidCapability(modality)) {
+        capabilitiesSet.add(modality);
+      } else if (process.env.NODE_ENV === "development") {
+        console.warn(`Unknown input modality: ${modality}`);
+      }
+    }
   }
-  if (model.modalities?.output) {
-    capabilities.push(...(model.modalities.output as TCapability[]));
+
+  if (model.modalities?.output && Array.isArray(model.modalities.output)) {
+    for (const modality of model.modalities.output) {
+      if (isValidCapability(modality)) {
+        capabilitiesSet.add(modality);
+      } else if (process.env.NODE_ENV === "development") {
+        console.warn(`Unknown output modality: ${modality}`);
+      }
+    }
   }
 
-  if (model.attachment) capabilities.push("attachment");
-  if (model.reasoning) capabilities.push("reasoning");
-  if (model.tool_call) capabilities.push("tools");
-  if (model.temperature) capabilities.push("temperature");
+  if (model.attachment) capabilitiesSet.add("attachment");
+  if (model.reasoning) capabilitiesSet.add("reasoning");
+  if (model.tool_call) capabilitiesSet.add("tools");
+  if (model.temperature) capabilitiesSet.add("temperature");
 
-  return [...new Set(capabilities)];
+  return Array.from(capabilitiesSet);
 };
 
 const modelCapabilitiesCache = new WeakMap<TModel, TCapability[]>();
@@ -120,9 +154,14 @@ export function useModelsSearch() {
 
   const selectedCapabilities = useMemo(() => {
     if (!deferredCapabilitiesParam) return new Set<TCapability>();
-    return new Set(
-      deferredCapabilitiesParam.split(",").filter(Boolean) as TCapability[]
-    );
+
+    const capabilitiesFromUrl = deferredCapabilitiesParam
+      .split(",")
+      .map((cap) => cap.trim())
+      .filter((cap) => cap.length > 0)
+      .filter(isValidCapability);
+
+    return new Set(capabilitiesFromUrl);
   }, [deferredCapabilitiesParam]);
 
   const filteredModels = useMemo(() => {
@@ -148,7 +187,11 @@ export function useModelsSearch() {
     startTransition(() => {
       const currentCapabilities = capabilitiesParam
         ? new Set(
-            capabilitiesParam.split(",").filter(Boolean) as TCapability[]
+            capabilitiesParam
+              .split(",")
+              .map((cap) => cap.trim())
+              .filter((cap) => cap.length > 0)
+              .filter(isValidCapability)
           )
         : new Set<TCapability>();
 

@@ -27,10 +27,10 @@ export const SearchInput = forwardRef<TSearchInputRef, TSearchInputProps>(
     const [isMac, setIsMac] = useState(false);
 
     useEffect(() => {
-      setIsMac(navigator.platform.toUpperCase().indexOf("MAC") >= 0);
+      setIsMac(/(Mac|iPhone|iPod|iPad)/i.test(navigator.platform));
     }, []);
 
-    const defaultPlaceholder = `Search models... (${isMac ? "⌘" : "Ctrl"}+K)`;
+    const defaultPlaceholder = `Search models... (${isMac ? "⌘" : "Ctrl+"}K)`;
     const finalPlaceholder = placeholder || defaultPlaceholder;
 
     useImperativeHandle(ref, () => ({

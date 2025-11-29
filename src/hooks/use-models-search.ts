@@ -1,10 +1,10 @@
 "use client";
 
-import { useDeferredValue, useEffect, useMemo, useTransition } from "react";
+import { useDeferredValue, useMemo, useTransition } from "react";
 import { useQueryState } from "nuqs";
 import Fuse from "fuse.js";
 import type { TModel as TApiModel, TProvider as TApiProvider } from "@/types/api";
-import { useModelsStore } from "@/store/models-store";
+import { useModels } from "./use-models";
 
 export type TModel = TApiModel;
 export type TProvider = TApiProvider;
@@ -72,12 +72,7 @@ const filterByCapabilities = (
 
 export function useModelsSearch() {
   const [isPending, startTransition] = useTransition();
-  const { models, isLoading, initializeModels, refreshModels } =
-    useModelsStore();
-
-  useEffect(() => {
-    initializeModels();
-  }, [initializeModels]);
+  const { data: models, isLoading, error } = useModels();
 
   const allModels: TModelEntry[] = useMemo(() => {
     if (!models) return [];
@@ -184,6 +179,6 @@ export function useModelsSearch() {
     allModels,
     isPending: isPending || isLoading,
     isLoading,
-    refreshModels,
+    error,
   };
 }

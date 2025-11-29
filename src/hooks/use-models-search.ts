@@ -1,63 +1,53 @@
 "use client";
 
-import { useMemo, useTransition, useDeferredValue } from "react";
+import { useDeferredValue, useEffect, useMemo, useTransition } from "react";
 import { useQueryState } from "nuqs";
 import Fuse from "fuse.js";
-import { models } from "@/data/models";
+import type { TModel as TApiModel, TProvider as TApiProvider } from "@/types/api";
+import { useModelsStore } from "@/store/models-store";
 
-// Derive types from the data layer
-type ModelsData = typeof models;
-type AllModels = {
-  [K in keyof ModelsData]: ModelsData[K]["models"][keyof ModelsData[K]["models"]]
-}[keyof ModelsData];
-type AllProviders = ModelsData[keyof ModelsData];
+export type TModel = TApiModel;
+export type TProvider = TApiProvider;
 
-export type Model = AllModels;
-export type Provider = AllProviders;
-
-export type ModelEntry = {
-  model: Model;
-  provider: Provider;
+export type TModelEntry = {
+  model: TModel;
+  provider: TProvider;
   providerKey: string;
   modelKey: string;
   uniqueKey: string;
 };
 
-export type Capability = 
-  | "text" 
-  | "image" 
-  | "audio" 
-  | "video" 
-  | "attachment" 
-  | "reasoning" 
-  | "tools" 
+export type TCapability =
+  | "text"
+  | "image"
+  | "audio"
+  | "video"
+  | "attachment"
+  | "reasoning"
+  | "tools"
   | "temperature";
 
-// Helper to extract all capabilities from a model
-const getModelCapabilities = (model: Model): Capability[] => {
-  const capabilities: Capability[] = [];
-  
-  // Add modalities
+const getModelCapabilities = (model: TModel): TCapability[] => {
+  const capabilities: TCapability[] = [];
+
   if (model.modalities?.input) {
-    capabilities.push(...(model.modalities.input as Capability[]));
+    capabilities.push(...(model.modalities.input as TCapability[]));
   }
   if (model.modalities?.output) {
-    capabilities.push(...(model.modalities.output as Capability[]));
+    capabilities.push(...(model.modalities.output as TCapability[]));
   }
-  
-  // Add features
+
   if (model.attachment) capabilities.push("attachment");
   if (model.reasoning) capabilities.push("reasoning");
   if (model.tool_call) capabilities.push("tools");
   if (model.temperature) capabilities.push("temperature");
-  
+
   return [...new Set(capabilities)];
 };
 
-// Memoized model capabilities cache
-const modelCapabilitiesCache = new WeakMap<Model, Capability[]>();
+const modelCapabilitiesCache = new WeakMap<TModel, TCapability[]>();
 
-const getCachedModelCapabilities = (model: Model): Capability[] => {
+const getCachedModelCapabilities = (model: TModel): TCapability[] => {
   if (modelCapabilitiesCache.has(model)) {
     return modelCapabilitiesCache.get(model)!;
   }
@@ -66,91 +56,107 @@ const getCachedModelCapabilities = (model: Model): Capability[] => {
   return capabilities;
 };
 
-const filterByCapabilities = (models: ModelEntry[], selectedCapabilities: Set<Capability>): ModelEntry[] => {
+const filterByCapabilities = (
+  models: TModelEntry[],
+  selectedCapabilities: Set<TCapability>
+): TModelEntry[] => {
   if (selectedCapabilities.size === 0) return models;
-  
-  return models.filter(entry => {
+
+  return models.filter((entry) => {
     const modelCapabilities = getCachedModelCapabilities(entry.model);
-    return Array.from(selectedCapabilities).every(cap => modelCapabilities.includes(cap));
+    return Array.from(selectedCapabilities).every((cap) =>
+      modelCapabilities.includes(cap)
+    );
   });
 };
 
-// Prepare all models data once
-const allModels: ModelEntry[] = Object.entries(models).flatMap(
-  ([providerKey, provider]) =>
-    Object.entries(provider.models).map(([modelKey, model]) => ({
-      model,
-      provider,
-      providerKey,
-      modelKey,
-      uniqueKey: `${providerKey}/${modelKey}`,
-    }))
-);
-
-// Configure Fuse for fuzzy search
-const fuse = new Fuse(allModels, {
-  keys: [
-    { name: "model.name", weight: 2 },
-    { name: "model.id", weight: 1.5 },
-    { name: "provider.name", weight: 1 },
-  ],
-  threshold: 0.4,
-  includeScore: true,
-  ignoreLocation: true,
-  findAllMatches: false,
-});
-
 export function useModelsSearch() {
   const [isPending, startTransition] = useTransition();
-  
-  // URL state management with nuqs
+  const { models, isLoading, initializeModels, refreshModels } =
+    useModelsStore();
+
+  useEffect(() => {
+    initializeModels();
+  }, [initializeModels]);
+
+  const allModels: TModelEntry[] = useMemo(() => {
+    if (!models) return [];
+
+    return Object.entries(models).flatMap(([providerKey, provider]) =>
+      Object.entries(provider.models).map(([modelKey, model]) => ({
+        model,
+        provider,
+        providerKey,
+        modelKey,
+        uniqueKey: `${providerKey}/${modelKey}`,
+      }))
+    );
+  }, [models]);
+
+  const fuse = useMemo(() => {
+    return new Fuse(allModels, {
+      keys: [
+        { name: "model.name", weight: 2 },
+        { name: "model.id", weight: 1.5 },
+        { name: "provider.name", weight: 1 },
+      ],
+      threshold: 0.4,
+      includeScore: true,
+      ignoreLocation: true,
+      findAllMatches: false,
+    });
+  }, [allModels]);
+
   const [searchTerm, setSearchTermInternal] = useQueryState("search", {
     defaultValue: "",
     clearOnDefault: true,
   });
-  
-  const [capabilitiesParam, setCapabilitiesParamInternal] = useQueryState("capabilities", {
-    defaultValue: "",
-    clearOnDefault: true,
-  });
 
-  // Use deferred values only for heavy filtering operations
+  const [capabilitiesParam, setCapabilitiesParamInternal] = useQueryState(
+    "capabilities",
+    {
+      defaultValue: "",
+      clearOnDefault: true,
+    }
+  );
+
   const deferredSearchTerm = useDeferredValue(searchTerm);
   const deferredCapabilitiesParam = useDeferredValue(capabilitiesParam);
 
-  // Convert capabilities param to Set (using deferred value for performance)
   const selectedCapabilities = useMemo(() => {
-    if (!deferredCapabilitiesParam) return new Set<Capability>();
-    return new Set(deferredCapabilitiesParam.split(",").filter(Boolean) as Capability[]);
+    if (!deferredCapabilitiesParam) return new Set<TCapability>();
+    return new Set(
+      deferredCapabilitiesParam.split(",").filter(Boolean) as TCapability[]
+    );
   }, [deferredCapabilitiesParam]);
 
-  // Filter models based on search and capabilities (using deferred values for heavy operations)
   const filteredModels = useMemo(() => {
-    // Start with all models for fast initial render
     let filtered = allModels;
 
-    // Apply fuzzy search if term exists (this is the heaviest operation)
     if (deferredSearchTerm.trim()) {
       const searchResults = fuse.search(deferredSearchTerm.trim());
-      filtered = searchResults.map(result => result.item);
+      filtered = searchResults.map((result) => result.item);
     }
 
-    // Apply capability filters (lighter operation)
     if (selectedCapabilities.size > 0) {
       filtered = filterByCapabilities(filtered, selectedCapabilities);
     }
 
     return filtered;
-  }, [deferredSearchTerm, selectedCapabilities]);
+  }, [deferredSearchTerm, selectedCapabilities, allModels, fuse]);
 
   const setSearchTerm = (value: string) => {
     setSearchTermInternal(value);
   };
 
-  const toggleCapability = (capability: Capability) => {
+  const toggleCapability = (capability: TCapability) => {
     startTransition(() => {
-      const currentCapabilities = capabilitiesParam ? new Set(capabilitiesParam.split(",").filter(Boolean) as Capability[]) : new Set<Capability>();
-      
+      const currentCapabilities = capabilitiesParam
+        ? new Set(
+            capabilitiesParam.split(",").filter(Boolean) as TCapability[]
+          )
+        : new Set<TCapability>();
+
       if (currentCapabilities.has(capability)) {
         currentCapabilities.delete(capability);
       } else {
@@ -176,6 +182,8 @@ export function useModelsSearch() {
     clearCapabilities,
     filteredModels,
     allModels,
-    isPending, // Expose loading state for UI feedback
+    isPending: isPending || isLoading,
+    isLoading,
+    refreshModels,
   };
 }

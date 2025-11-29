@@ -1,5 +1,4 @@
-import React, { useMemo, useCallback, createContext, useContext } from "react";
-import { Badge } from "@/components/ui/badge";
+import React, { createContext, useCallback, useContext, useMemo } from "react";
 import { Card, CardTitle } from "@/components/ui/card";
 import {
   Tooltip,
@@ -7,22 +6,22 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import type { TCapability, TModelEntry } from "@/hooks/use-models-search";
+import { cn } from "@/lib/utils";
 import { CapabilityBadges } from "./capability-badges";
 import { ModelImage } from "./model-image";
 import { PricingBadge } from "./pricing-badge";
-import { cn } from "@/lib/utils";
-import type { ModelEntry, Capability } from "@/hooks/use-models-search";
 
-type ModelCardContextType = {
-  model: ModelEntry["model"];
-  provider: ModelEntry["provider"];
-  providerKey: ModelEntry["providerKey"];
-  uniqueKey: ModelEntry["uniqueKey"];
-  selectedCapabilities?: Set<Capability>;
-  onCapabilityClick?: (capability: Capability) => void;
+type TModelCardContextType = {
+  model: TModelEntry["model"];
+  provider: TModelEntry["provider"];
+  providerKey: TModelEntry["providerKey"];
+  uniqueKey: TModelEntry["uniqueKey"];
+  selectedCapabilities?: Set<TCapability>;
+  onCapabilityClick?: (capability: TCapability) => void;
 };
 
-const ModelCardContext = createContext<ModelCardContextType | null>(null);
+const ModelCardContext = createContext<TModelCardContextType | null>(null);
 
 const useModelCard = () => {
   const context = useContext(ModelCardContext);
@@ -34,9 +33,9 @@ const useModelCard = () => {
   return context;
 };
 
-type TModelCardProps = ModelEntry & {
-  selectedCapabilities?: Set<Capability>;
-  onCapabilityClick?: (capability: Capability) => void;
+type TModelCardProps = Omit<TModelEntry, "modelKey"> & {
+  selectedCapabilities?: Set<TCapability>;
+  onCapabilityClick?: (capability: TCapability) => void;
   className?: string;
   children?: React.ReactNode;
 } & React.ComponentProps<typeof Card>;
@@ -51,7 +50,7 @@ function ModelCardHeader({ className, ...props }: React.ComponentProps<"div">) {
   } = useModelCard();
 
   const handleCapabilityClick = useCallback(
-    (capability: Capability) => {
+    (capability: TCapability) => {
       onCapabilityClick?.(capability);
     },
     [onCapabilityClick]
@@ -72,7 +71,6 @@ function ModelCardHeader({ className, ...props }: React.ComponentProps<"div">) {
 
   return (
     <div className={cn("mb-3", className)} {...props}>
-      {/* Top section: Image on left, metadata on right */}
       <div className="flex items-start justify-between mb-3">
         <ModelImage
           providerKey={providerKey}
@@ -102,7 +100,6 @@ function ModelCardHeader({ className, ...props }: React.ComponentProps<"div">) {
         </div>
       </div>
 
-      {/* Model name and provider */}
       <div className="mb-3">
         <CardTitle className="text-base font-semibold truncate leading-tight mb-0.5">
           {model.name}
@@ -111,7 +108,6 @@ function ModelCardHeader({ className, ...props }: React.ComponentProps<"div">) {
           {provider.name}
         </p>
 
-        {/* Capabilities right after model info */}
         <CapabilityBadges
           modalities={model.modalities}
           attachment={model.attachment}
@@ -132,22 +128,14 @@ function ModelCardMetadata({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  return (
-    <div className={cn("mb-3", className)} {...props}>
-      {/* Metadata is now handled in the header */}
-    </div>
-  );
+  return <div className={cn("mb-3", className)} {...props} />;
 }
 
 function ModelCardCapabilities({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  return (
-    <div className={cn("", className)} {...props}>
-      {/* Capabilities are now in the header */}
-    </div>
-  );
+  return <div className={cn("", className)} {...props} />;
 }
 
 type ModelCardComponent = {
@@ -209,4 +197,4 @@ ModelCard.Metadata = ModelCardMetadata;
 ModelCard.Capabilities = ModelCardCapabilities;
 
 export { ModelCard };
-export type { ModelCardContextType, TModelCardProps };
+export type { TModelCardContextType, TModelCardProps };

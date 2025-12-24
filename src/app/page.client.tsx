@@ -10,6 +10,7 @@ import { Kbd } from "@/components/ui/kbd";
 import { CapabilityFilter } from "@/components/capability-filter";
 import { SearchInput, type TSearchInputRef } from "@/components/search-input";
 import { VirtualizedModelGrid } from "@/components/virtualized-model-grid";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { useModelsSearch } from "@/hooks/use-models-search";
 import { useModels } from "@/hooks/use-models";
 import type { TCapability } from "@/hooks/use-models-search";
@@ -130,6 +131,7 @@ export function ModelsClient() {
                 onChange={setSearchTerm}
               />
             </div>
+            <ThemeToggle />
           </div>
 
           <div className="flex items-center justify-between">

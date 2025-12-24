@@ -70,11 +70,13 @@ function CapabilityFilterTrigger({
       <Button
         type="button"
         aria-pressed={hasFilters}
-        aria-label={hasFilters ? `Filters (${selectedCapabilities.size})` : "Filter"}
+        aria-label={
+          hasFilters ? `Filters (${selectedCapabilities.size})` : "Filter"
+        }
         variant={hasFilters ? "default" : "outline"}
         size="sm"
         className={cn(
-          "h-8 px-2 sm:px-3 text-xs gap-1 sm:gap-2 transition-colors",
+          "h-8 px-2 sm:px-3 text-xs gap-1 sm:gap-2 transition-colors cursor-pointer",
           hasFilters && "bg-primary text-primary-foreground",
           className
         )}
@@ -204,8 +206,7 @@ const CapabilityFilterRoot = ({
   );
 };
 
-const CapabilityFilter =
-  CapabilityFilterRoot as TCapabilityFilterComponent;
+const CapabilityFilter = CapabilityFilterRoot as TCapabilityFilterComponent;
 
 CapabilityFilter.Trigger = CapabilityFilterTrigger;
 CapabilityFilter.Content = CapabilityFilterContent;

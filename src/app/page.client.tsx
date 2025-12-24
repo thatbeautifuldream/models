@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
-import { Keyboard, Github } from "lucide-react";
+import { Keyboard, Github as GithubIcon } from "lucide-react";
 import NumberFlow from "@number-flow/react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -119,7 +119,7 @@ export function ModelsClient() {
               className="group text-sm font-medium text-foreground transition-colors whitespace-nowrap p-2 border hover:border-primary"
             >
               models.surf{" "}
-              <span className="text-muted-foreground/80 group-hover:text-foreground transition-colors">
+              <span className="hidden sm:inline text-muted-foreground/80 group-hover:text-foreground transition-colors">
                 by milind
               </span>
             </Link>
@@ -130,32 +130,35 @@ export function ModelsClient() {
                 onChange={setSearchTerm}
               />
             </div>
-            <Button
-              variant="outline"
-              asChild
-              className="flex-shrink-0 flex gap-2"
-            >
-              <a
-                href="https://github.com/thatbeautifuldream/models"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Open Source
-              </a>
-            </Button>
           </div>
 
           <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground hover:text-primary transition-colors whitespace-nowrap">
-              <NumberFlow value={filteredModels.length} /> models
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground hover:text-primary transition-colors whitespace-nowrap">
+                <NumberFlow value={filteredModels.length} /> models
+              </span>
+            </div>
 
             <div className="flex items-center gap-2">
               <Button
-                variant="ghost"
+                variant="secondary"
+                size="sm"
+                asChild
+                className="h-8 w-8 p-0 border"
+              >
+                <a
+                  href="https://github.com/thatbeautifuldream/models"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <GithubIcon className="h-4 w-4" />
+                </a>
+              </Button>
+              <Button
+                variant="secondary"
                 size="sm"
                 onClick={() => setShowHelp((prev) => !prev)}
-                className="h-8 w-8 p-0"
+                className="h-8 w-8 p-0 border cursor-pointer"
               >
                 <Keyboard className="h-4 w-4" />
               </Button>

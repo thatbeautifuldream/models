@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
-import { Keyboard } from "lucide-react";
+import { Keyboard, Github } from "lucide-react";
 import NumberFlow from "@number-flow/react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Kbd } from "@/components/ui/kbd";
 import { CapabilityFilter } from "@/components/capability-filter";
@@ -112,11 +113,37 @@ export function ModelsClient() {
     <div className="h-screen flex flex-col select-none">
       <div className="flex-none container mx-auto px-4 py-3">
         <div className="space-y-3">
-          <SearchInput
-            ref={searchInputRef}
-            value={searchTerm}
-            onChange={setSearchTerm}
-          />
+          <div className="flex items-center gap-3">
+            <Link
+              href="/"
+              className="group text-sm font-medium text-foreground transition-colors whitespace-nowrap p-2 border hover:border-primary"
+            >
+              models.surf{" "}
+              <span className="text-muted-foreground/80 group-hover:text-foreground transition-colors">
+                by milind
+              </span>
+            </Link>
+            <div className="flex-1">
+              <SearchInput
+                ref={searchInputRef}
+                value={searchTerm}
+                onChange={setSearchTerm}
+              />
+            </div>
+            <Button
+              variant="outline"
+              asChild
+              className="flex-shrink-0 flex gap-2"
+            >
+              <a
+                href="https://github.com/thatbeautifuldream/models"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Open Source
+              </a>
+            </Button>
+          </div>
 
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground hover:text-primary transition-colors whitespace-nowrap">
@@ -165,9 +192,7 @@ export function ModelsClient() {
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Clear filters</span>
-                <Kbd>
-                  {isMac ? "⌘⇧" : "Ctrl+Shift+"}C
-                </Kbd>
+                <Kbd>{isMac ? "⌘⇧" : "Ctrl+Shift+"}C</Kbd>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Toggle text</span>

@@ -1,11 +1,11 @@
 const EXTERNAL_API_URL = "https://models.dev/api.json";
 
-export const revalidate = 86400;
+export const revalidate = 18000;
 
 export async function GET() {
   try {
     const response = await fetch(EXTERNAL_API_URL, {
-      next: { revalidate: 86400 },
+      next: { revalidate: 18000 },
     });
     if (!response.ok) {
       throw new Error(`External API returned ${response.status}`);
@@ -18,7 +18,7 @@ export async function GET() {
       headers: {
         "Content-Type": "application/json",
         "Cache-Control":
-          "public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800",
+          "public, max-age=18000, s-maxage=18000, stale-while-revalidate=18000",
       },
     });
   } catch (error) {

@@ -19,7 +19,7 @@ export function PricingBadge({ input, output }: TPricingBadgeProps) {
   if (hasInput && hasOutput) {
     return (
       <TooltipProvider>
-        <div className="inline-flex overflow-hidden text-xs font-medium border">
+        <div className="inline-flex overflow-hidden text-sm font-medium border rounded-full">
           <Tooltip>
             <TooltipTrigger asChild>
               <div className="px-2 py-0.5 border-r cursor-help">${input}</div>
@@ -46,7 +46,7 @@ export function PricingBadge({ input, output }: TPricingBadgeProps) {
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <div className="inline-flex px-2 py-0.5 text-xs font-medium border cursor-help">
+            <div className="inline-flex px-2 py-0.5 text-sm font-medium border rounded-full cursor-help">
               ${input}
             </div>
           </TooltipTrigger>
@@ -62,7 +62,7 @@ export function PricingBadge({ input, output }: TPricingBadgeProps) {
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <div className="inline-flex px-2 py-0.5 text-xs font-medium border cursor-help">
+          <div className="inline-flex px-2 py-0.5 text-sm font-medium border rounded-full cursor-help">
             ${output}
           </div>
         </TooltipTrigger>

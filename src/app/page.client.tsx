@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Kbd } from "@/components/ui/kbd";
 import { CapabilityFilter } from "@/components/capability-filter";
 import { SearchInput, type TSearchInputRef } from "@/components/search-input";
-import { VirtualizedModelGrid } from "@/components/virtualized-model-grid";
+import { VirtualizedModelList } from "@/components/virtualized-model-list";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useModelsSearch } from "@/hooks/use-models-search";
 import { useModels } from "@/hooks/use-models";
@@ -104,49 +104,47 @@ export function ModelsClient() {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen gap-4">
-        <div className="text-sm text-muted-foreground">Loading models…</div>
+      <div className="flex flex-col items-center justify-center min-h-screen gap-4 isolate">
+        <div className="text-base text-muted-foreground">Loading models…</div>
       </div>
     );
   }
 
   return (
-    <div className="h-screen flex flex-col select-none">
-      <div className="flex-none container mx-auto px-4 py-3">
-        <div className="space-y-3">
-          <div className="flex items-center gap-3">
-            <Link
-              href="/"
-              className="group text-sm font-medium text-foreground transition-colors whitespace-nowrap p-2 border hover:border-primary"
-            >
-              models.surf{" "}
-              <span className="hidden sm:inline text-muted-foreground/80 group-hover:text-foreground transition-colors">
-                by milind
-              </span>
-            </Link>
-            <div className="flex-1">
+    <div className="h-screen flex flex-col select-none isolate">
+      <div className="flex-none border-b border-neutral-200 dark:border-neutral-800">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between py-4">
+            <div className="flex items-center gap-6">
+              <Link
+                href="/"
+                className="group flex items-baseline gap-2 transition-colors"
+              >
+                <span className="text-xl font-semibold text-foreground">models.surf</span>
+                <span className="hidden sm:inline text-sm text-neutral-500 group-hover:text-neutral-700 dark:text-neutral-400 dark:group-hover:text-neutral-300 transition-colors">
+                  by milind
+                </span>
+              </Link>
+              <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-neutral-50 dark:bg-neutral-800/50 rounded-lg border border-neutral-200 dark:border-neutral-700">
+                <span className="text-base font-semibold text-foreground tabular-nums">
+                  <NumberFlow value={filteredModels.length} />
+                </span>
+                <span className="text-sm text-neutral-500 dark:text-neutral-400">models</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
               <SearchInput
                 ref={searchInputRef}
                 value={searchTerm}
                 onChange={setSearchTerm}
               />
-            </div>
-            <ThemeToggle />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground hover:text-primary transition-colors whitespace-nowrap">
-                <NumberFlow value={filteredModels.length} /> models
-              </span>
-            </div>
-
-            <div className="flex items-center gap-2">
+              <ThemeToggle />
               <Button
-                variant="secondary"
+                variant="ghost"
                 size="sm"
                 asChild
-                className="h-8 w-8 p-0 border"
+                className="h-9 w-9"
               >
                 <a
                   href="https://github.com/thatbeautifuldream/models"
@@ -157,10 +155,10 @@ export function ModelsClient() {
                 </a>
               </Button>
               <Button
-                variant="secondary"
+                variant="ghost"
                 size="sm"
                 onClick={() => setShowHelp((prev) => !prev)}
-                className="h-8 w-8 p-0 border cursor-pointer"
+                className="h-9 w-9"
               >
                 <Keyboard className="h-4 w-4" />
               </Button>
@@ -179,10 +177,11 @@ export function ModelsClient() {
       </div>
 
       {showHelp && (
-        <div className="flex-none container mx-auto px-4 pb-3">
-          <div className="border p-4 bg-card text-card-foreground text-xs space-y-2">
-            <div className="font-semibold mb-2">Keyboard Shortcuts</div>
-            <div className="grid grid-cols-2 gap-x-8 gap-y-1.5">
+        <div className="flex-none border-b border-neutral-200 dark:border-neutral-800">
+          <div className="container mx-auto px-4 py-4">
+            <div className="bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-200 dark:border-neutral-700 p-6 rounded-xl">
+              <div className="text-base font-semibold mb-4">Keyboard Shortcuts</div>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-x-6 gap-y-3">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Search</span>
                 <Kbd>{isMac ? "⌘" : "Ctrl+"}K</Kbd>
@@ -223,13 +222,14 @@ export function ModelsClient() {
                 <span className="text-muted-foreground">Shortcuts help</span>
                 <Kbd>{isMac ? "⌘/" : "Ctrl+/"}</Kbd>
               </div>
+              </div>
             </div>
           </div>
         </div>
       )}
 
       <div className="flex-1 min-h-0">
-        <VirtualizedModelGrid
+        <VirtualizedModelList
           models={filteredModels}
           searchTerm={searchTerm}
           selectedCapabilities={selectedCapabilities}

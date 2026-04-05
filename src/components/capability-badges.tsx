@@ -80,7 +80,7 @@ function CapabilityBadge({
         }
       }}
       className={cn(
-        "text-xs uppercase font-medium tracking-wide transition-colors px-2 py-0.5 select-none",
+        "text-sm font-medium transition-colors px-2.5 py-0.5 select-none",
         onCapabilityClick 
           ? isSelected 
             ? "cursor-pointer hover:bg-primary/80" 

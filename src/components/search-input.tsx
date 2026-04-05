@@ -37,27 +37,27 @@ export const SearchInput = forwardRef<TSearchInputRef, TSearchInputProps>(
       focus: () => inputRef.current?.focus(),
     }));
 
-    return (
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-        <Input
-          ref={inputRef}
-          type="text"
-          placeholder={finalPlaceholder}
-          value={value}
-          aria-label={finalPlaceholder}
-          autoComplete="off"
-          autoCorrect="off"
-          spellCheck={false}
-          onChange={(e) => onChange(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Escape") {
-              onChange("");
-              inputRef.current?.blur();
-            }
-          }}
-          className="pl-10 pr-10 placeholder:hidden sm:placeholder:inline"
-        />
+  return (
+    <div className="relative flex-1 max-w-md">
+      <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+      <Input
+        ref={inputRef}
+        type="text"
+        placeholder={finalPlaceholder}
+        value={value}
+        aria-label={finalPlaceholder}
+        autoComplete="off"
+        autoCorrect="off"
+        spellCheck={false}
+        onChange={(e) => onChange(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") {
+            onChange("");
+            inputRef.current?.blur();
+          }
+        }}
+        className="pl-10 pr-10"
+      />
         {value && (
           <Button
             variant="ghost"
